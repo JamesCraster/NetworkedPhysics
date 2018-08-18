@@ -1,5 +1,6 @@
 "use strict"
-var socket = io('http://openwerewolf.us-west-2.elasticbeanstalk.com:8081');
+//var socket = io('http://openwerewolf.us-west-2.elasticbeanstalk.com:8081');
+var socket = io();
 var app = new PIXI.Application({
     width: 800,
     height: 600,
@@ -119,6 +120,7 @@ class Player {
 }
 document.getElementById('canvasContainer').appendChild(app.view);
 var player = new Player(0, 0, 50, 50);
+let players = [];
 document.addEventListener('keydown', function (event) {
     console.log(event.keyCode);
     if (event.keyCode == 38) {
@@ -138,7 +140,17 @@ document.addEventListener('keydown', function (event) {
         socket.emit('input', Inputs.LEFT);
     }
 });
+socket.on('addPlayer', function (x, y) {
+    players.push(new Player(x, y, 50, 50));
+    console.log(x);
+    console.log(y);
+    console.log(players[players.length - 1]);
+});
+socket.on('removePlayer', function (i) {
+    app.stage.removeChild(players[i].graphics);
+    players.splice(i, 1);
 
+});
 socket.on('update', function (position) {
     player._setPosition(position.x, position.y);
 });
@@ -148,12 +160,22 @@ socket.on('platforms', function (boxes) {
         new Box(boxes[i].position.x, boxes[i].position.y);
     }
 });
+socket.on('otherUpdate', function (list) {
+    //console.log(players);
+    //console.log(list);
+    for (let i = 0; i < list.length; i++) {
+        players[i]._setPosition(list[i].x, list[i].y);
+    }
+});
 var delta = 0;
 var lastFrameTime = 0;
 var step = 1000 / 30;
 
 function render() {
     player.render();
+    for (let i = 0; i < players.length; i++) {
+        players[i].render();
+    }
     window.requestAnimationFrame(render);
 }
 window.requestAnimationFrame(render);
