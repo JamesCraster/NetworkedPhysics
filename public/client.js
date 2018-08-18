@@ -1,6 +1,6 @@
 "use strict"
-//var socket = io('http://openwerewolf.us-west-2.elasticbeanstalk.com:8081');
-var socket = io();
+var socket = io('http://openwerewolf.us-west-2.elasticbeanstalk.com:8081');
+//var socket = io();
 var app = new PIXI.Application({
     width: 800,
     height: 600,
@@ -13,6 +13,8 @@ var Inputs = {
     UP: 'UP',
     NONE: 'NONE'
 }
+//app.stage.x = 350;
+app.stage.y = 250;
 const serverInterval = 100;
 class Box {
     constructor(x, y) {
@@ -70,8 +72,14 @@ class Player {
         //if (alpha > 1) {
         //  alpha = 1;
         //}
+        let moveX = this._x * alpha + this._previousX * (1 - alpha) - this.graphics.x;
+        let moveY = this._y * alpha + this._previousY * (1 - alpha) - this.graphics.y;
         this.graphics.x = this._x * alpha + this._previousX * (1 - alpha);
         this.graphics.y = this._y * alpha + this._previousY * (1 - alpha);
+        return {
+            moveX: moveX,
+            moveY: moveY
+        };
     }
     move(x, y) {
         this._x += x;
@@ -170,9 +178,18 @@ socket.on('otherUpdate', function (list) {
 var delta = 0;
 var lastFrameTime = 0;
 var step = 1000 / 30;
+let now = performance.now();
 
-function render() {
-    player.render();
+function render(delta) {
+    delta = delta - now;
+    now = performance.now();
+    console.log(delta);
+    let move = player.render();
+    //app.stage.x = app.stage.x * (Math.pow(0.95, delta)) + (-player.graphics.x + 350) * (1 - (Math.pow(0.95, delta)));
+    app.stage.y = app.stage.y * (Math.pow(0.95, delta)) + (-player.graphics.y + 250) * (1 - (Math.pow(0.95, delta)));
+    //app.stage.x -= move.moveX;
+    //app.stage.y -= move.moveY;
+
     for (let i = 0; i < players.length; i++) {
         players[i].render();
     }
