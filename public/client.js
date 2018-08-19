@@ -14,7 +14,7 @@ var Inputs = {
     NONE: 'NONE'
 }
 //app.stage.x = 350;
-app.stage.y = 250;
+//app.stage.y = 250;
 const serverInterval = 100;
 class Box {
     constructor(x, y) {
@@ -183,10 +183,10 @@ let now = performance.now();
 function render(delta) {
     delta = delta - now;
     now = performance.now();
-    console.log(delta);
+    //console.log(delta);
     let move = player.render();
     //app.stage.x = app.stage.x * (Math.pow(0.95, delta)) + (-player.graphics.x + 350) * (1 - (Math.pow(0.95, delta)));
-    app.stage.y = app.stage.y * (Math.pow(0.95, delta)) + (-player.graphics.y + 250) * (1 - (Math.pow(0.95, delta)));
+    //app.stage.y = app.stage.y * (Math.pow(0.95, delta)) + (-player.graphics.y + 250) * (1 - (Math.pow(0.95, delta)));
     //app.stage.x -= move.moveX;
     //app.stage.y -= move.moveY;
 
